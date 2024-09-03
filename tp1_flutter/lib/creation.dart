@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 
-class Inscription extends StatefulWidget {
-  const Inscription({super.key, required this.title});
+class Creation extends StatefulWidget {
+  const Creation({super.key, required this.title});
 
   final String title;
 
   @override
-  State<Inscription> createState() => _InscriptionState();
+  State<Creation> createState() => _CreationState();
 }
 
-class _InscriptionState extends State<Inscription> {
+class _CreationState extends State<Creation> {
   int _counter = 0;
 
 
@@ -26,35 +26,27 @@ class _InscriptionState extends State<Inscription> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'Inscription',
+              'Creation',
             ),
             TextFormField(
               decoration: const InputDecoration(
-                labelText: 'Nom d\'utilisateur',
+                labelText: 'Nom de la tâche',
               ),
             ),
             TextFormField(
               decoration: const InputDecoration(
-                labelText: 'Mot de passe',
+                labelText: 'Date',
               ),
-              obscureText: true,
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Confirmation de mot de passe',
-              ),
-              obscureText: true,
             ),
             TextButton(
               style: TextButton.styleFrom(
                 backgroundColor: Colors.amber,
-
               ),
               onPressed: () {
-                Navigator.pushNamed(context, '/');
+                Navigator.pushNamed(context, '/accueil');
               },
               child: Text(
-                'S\'inscrire',
+                'Créé la tâche',
               ),
             ),
           ],
@@ -63,5 +55,3 @@ class _InscriptionState extends State<Inscription> {
     );
   }
 }
-
-

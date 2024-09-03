@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tp1_flutter/inscription.dart';
+import 'package:tp1_flutter/accueil.dart';
+import 'package:tp1_flutter/consultation.dart';
+import 'package:tp1_flutter/creation.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,6 +23,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => MyHomePage(title: "Test"),
         '/inscription': (context) => Inscription(title: "Inscription",),
+        '/accueil': (context) => Accueil(title: "Accueil",),
+        '/consultation': (context) => Consultation(title: "Consultation",),
+        '/creation': (context) => Creation(title: "Creation",),
       },
     );
   }
@@ -68,7 +74,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   backgroundColor: Colors.amber,
 
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, '/accueil');
+                },
                 child: Text(
                     'Connexion',
                 ),
