@@ -10,9 +10,24 @@ class Creation extends StatefulWidget {
   State<Creation> createState() => _CreationState();
 }
 
-class _CreationState extends State<Creation> {
-  int _counter = 0;
 
+class _CreationState extends State<Creation> {
+  DateTime selectedDate = DateTime.now();
+  String formattedDate = "${DateTime.now().year.toString()}-${DateTime.now().month.toString().padLeft(2,'0')}-${DateTime.now().day.toString().padLeft(2,'0')}";
+
+  _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate, // Refer step 1
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2025),
+    );
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+        formattedDate = "${selectedDate.year.toString()}-${selectedDate.month.toString().padLeft(2,'0')}-${selectedDate.day.toString().padLeft(2,'0')}";
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +48,13 @@ class _CreationState extends State<Creation> {
                 labelText: 'Nom de la tâche',
               ),
             ),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Date',
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.amber,
+              ),
+              onPressed: () { _selectDate(context); },
+              child: Text(
+                'Choisir une date',
               ),
             ),
             TextButton(
