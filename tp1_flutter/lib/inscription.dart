@@ -1,4 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:tp1_flutter/lib_http.dart';
+import 'package:tp1_flutter/transfert.dart';
 
 
 class Inscription extends StatefulWidget {
@@ -11,7 +14,21 @@ class Inscription extends StatefulWidget {
 }
 
 class _InscriptionState extends State<Inscription> {
-  int _counter = 0;
+
+  SignupRequest signupRequest = SignupRequest();
+
+  void getHttp() async {
+    try {
+      var response = await Dio().post('http://10.0.2.2:8787/api/id/signup');
+      print('RESPONSE : ' + response.toString());
+      this.signupRequest = SignupRequest.fromJson(response.data);
+      setState(() {
+
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
 
 
   @override
@@ -50,8 +67,23 @@ class _InscriptionState extends State<Inscription> {
                 backgroundColor: Colors.amber,
 
               ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/');
+              onPressed: () async {
+                try {
+                  SignupRequest req = SignupRequest();
+                  req.username = 'allo';
+                  req.password = 'password';
+                  var reponse = await signup(req);
+                  print(reponse);
+                  Navigator.pushNamed(context, '/');
+                } on DioError catch (e) {
+                  print(e);
+                  String message = e.response!.data;
+                  if (message == "BadCredentialsException") {
+                    print('login deja utilise');
+                  } else {
+                    print('autre erreurs');
+                  }
+                }
               },
               child: Text(
                 'S\'inscrire',
