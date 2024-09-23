@@ -15,6 +15,9 @@ class Inscription extends StatefulWidget {
 
 class _InscriptionState extends State<Inscription> {
 
+  final TextEditingController UsernameTextController = TextEditingController();
+  final TextEditingController PasswordTextController = TextEditingController();
+  final TextEditingController PasswordConfirmTextController = TextEditingController();
   SignupRequest signupRequest = SignupRequest();
 
   void getHttp() async {
@@ -46,17 +49,20 @@ class _InscriptionState extends State<Inscription> {
               'Inscription',
             ),
             TextFormField(
+              controller: UsernameTextController,
               decoration: const InputDecoration(
                 labelText: 'Nom d\'utilisateur',
               ),
             ),
             TextFormField(
+              controller: PasswordTextController,
               decoration: const InputDecoration(
                 labelText: 'Mot de passe',
               ),
               obscureText: true,
             ),
             TextFormField(
+              controller: PasswordConfirmTextController,
               decoration: const InputDecoration(
                 labelText: 'Confirmation de mot de passe',
               ),
@@ -70,7 +76,7 @@ class _InscriptionState extends State<Inscription> {
               onPressed: () async {
                 try {
                   SignupRequest req = SignupRequest();
-                  req.username = 'allo';
+                  req.username = UsernameTextController.toString();
                   req.password = 'password';
                   var reponse = await signup(req);
                   print(reponse);
