@@ -56,7 +56,8 @@ Future<SigninResponse> perc(int taskID, int value) async {
 Future<String> addTask(AddTaskRequest req) async {
   try {
     var response = await SingletonDio.getDio()
-        .post('http://10.0.2.2:8787/api/add');
+        .post('http://10.0.2.2:8787/api/add',
+        data : req.toJson());
     print(response);
     return "ok";
   } catch (e) {
@@ -68,7 +69,12 @@ Future<String> addTask(AddTaskRequest req) async {
 Future<List<GetTasksResponse>> getTasks() async {
   try {
     var response = await SingletonDio.getDio()
-        .get('http://10.0.2.2:8787/api/home');
+        .get('http://10.0.2.2:8787/api/home',
+    options: Options(
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    ));
     print(response);
     var listJSON = response.data as List;
     var listTask = listJSON.map((elementJSON) {

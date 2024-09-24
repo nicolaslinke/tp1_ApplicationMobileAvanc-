@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tp1_flutter/Singleton.dart';
 import 'package:tp1_flutter/inscription.dart';
 import 'package:tp1_flutter/accueil.dart';
 import 'package:tp1_flutter/consultation.dart';
@@ -95,9 +96,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   try {
                     SigninRequest req = SigninRequest();
                     req.username = 'allo';
-                    req.password = 'password';
+                    req.password = 'Password';
                     var reponse = await signin(req);
                     print(reponse);
+                    Singleton.instance.username = reponse.username;
                     Navigator.pushNamed(context, '/');
                   } on DioError catch (e) {
                     print(e);

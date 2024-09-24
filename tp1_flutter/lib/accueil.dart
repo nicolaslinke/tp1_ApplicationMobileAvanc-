@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:tp1_flutter/drawer.dart';
 import 'package:tp1_flutter/lib_http.dart';
 import 'package:tp1_flutter/transfert.dart';
 
@@ -30,7 +31,7 @@ class _AccueilState extends State<Accueil> {
   void initState() {
     try {
       super.initState();
-      getTasks();
+      getTask();
 
       for (var i = 0; i < listTask.length; i++) {
         ListeElement element = ListeElement();
@@ -70,6 +71,7 @@ class _AccueilState extends State<Accueil> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
+      drawer : const LeTiroir(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -93,21 +95,26 @@ class _AccueilState extends State<Accueil> {
               child: ListView.builder(
                 itemCount: listTask.length,
                 itemBuilder: (context, index) {
-                  return Row(
-                    children: [
-                      GestureDetector(
-                        child: Text(listTask[index].name),
-                        onTap: () {
-                        Navigator.pushNamed(context, '/consultation');
-                        },
+                  return GestureDetector(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(listTask[index].name),
+                          ),
+                          Expanded(
+                            child: Text('    ' + listTask[index].percentageDone.toString()),
+                          ),
+                          Expanded(
+                            child: Text('    ' + listTask[index].percentageTimeSpent.toString()),
+                          ),
+                          Expanded(
+                            child: Text('       ' + listTask[index].deadline.toString()),
+                          ),
+                        ],
                       ),
-                      GestureDetector(
-                        child: Text('      allo'),
-                        onTap: () {
-                          Navigator.pushNamed(context, '/consultation');
-                        },
-                      ),
-                    ],
+                    onTap: () {
+                      Navigator.pushNamed(context, '/consultation');
+                    },
                   );
                 },
               ),
