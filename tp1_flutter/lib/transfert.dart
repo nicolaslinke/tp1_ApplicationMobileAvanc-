@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 /// This allows the `User` class to access private members in
@@ -63,7 +64,7 @@ class AddTaskRequest {
   AddTaskRequest();
 
   String name = '';
-  String deadline = '';
+  DateTime deadline = DateTime.now();
 
   factory AddTaskRequest.fromJson(Map<String, dynamic> json) =>
       _$AddTaskRequestFromJson(json);
@@ -71,6 +72,12 @@ class AddTaskRequest {
   Map<String, dynamic> toJson() => _$AddTaskRequestToJson(this);
 }
 
+
+final _dateFormatter = DateFormat("yyyy-MM-dd");
+
+DateTime _fromJson(String date) => _dateFormatter.parse(date);
+
+String _toJson(DateTime date) => _dateFormatter.format(date);
 
 @JsonSerializable()
 class GetTasksRequest {
@@ -83,46 +90,30 @@ class GetTasksRequest {
 }
 
 
-/*@JsonSerializable()
+@JsonSerializable()
 class GetTasksResponse {
   GetTasksResponse();
 
-  Long id = 0 as Long;
+  int id = 0;
   String name = '';
   int percentageDone = 0;
   double percentageTimeSpent = 0 as double;
-  Date deadline = '';
+  DateTime deadline = DateTime.now();
 
   factory GetTasksResponse.fromJson(Map<String, dynamic> json) =>
       _$GetTasksResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$GetTasksResponseToJson(this);
-}*/
+}
 
 @JsonSerializable()
 class ChangePercRequest {
   ChangePercRequest();
 
-  int id = 1;
-  int valeur = 1;
-
   factory ChangePercRequest.fromJson(Map<String, dynamic> json) =>
       _$ChangePercRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$ChangePercRequestToJson(this);
-}
-
-@JsonSerializable()
-class ChangePercResponse {
-  ChangePercResponse();
-
-  int id = 1;
-  int valeur = 1;
-
-  factory ChangePercResponse.fromJson(Map<String, dynamic> json) =>
-      _$ChangePercResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ChangePercResponseToJson(this);
 }
 
 @JsonSerializable()

@@ -47,12 +47,12 @@ Map<String, dynamic> _$SigninResponseToJson(SigninResponse instance) =>
 AddTaskRequest _$AddTaskRequestFromJson(Map<String, dynamic> json) =>
     AddTaskRequest()
       ..name = json['name'] as String
-      ..deadline = json['deadline'] as String;
+      ..deadline = DateTime.parse(json['deadline'] as String);
 
 Map<String, dynamic> _$AddTaskRequestToJson(AddTaskRequest instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'deadline': instance.deadline,
+      'deadline': instance.deadline.toIso8601String(),
     };
 
 GetTasksRequest _$GetTasksRequestFromJson(Map<String, dynamic> json) =>
@@ -61,27 +61,28 @@ GetTasksRequest _$GetTasksRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$GetTasksRequestToJson(GetTasksRequest instance) =>
     <String, dynamic>{};
 
-ChangePercRequest _$ChangePercRequestFromJson(Map<String, dynamic> json) =>
-    ChangePercRequest()
+GetTasksResponse _$GetTasksResponseFromJson(Map<String, dynamic> json) =>
+    GetTasksResponse()
       ..id = (json['id'] as num).toInt()
-      ..valeur = (json['valeur'] as num).toInt();
+      ..name = json['name'] as String
+      ..percentageDone = (json['percentageDone'] as num).toInt()
+      ..percentageTimeSpent = (json['percentageTimeSpent'] as num).toDouble()
+      ..deadline = DateTime.parse(json['deadline'] as String);
+
+Map<String, dynamic> _$GetTasksResponseToJson(GetTasksResponse instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'percentageDone': instance.percentageDone,
+      'percentageTimeSpent': instance.percentageTimeSpent,
+      'deadline': instance.deadline.toIso8601String(),
+    };
+
+ChangePercRequest _$ChangePercRequestFromJson(Map<String, dynamic> json) =>
+    ChangePercRequest();
 
 Map<String, dynamic> _$ChangePercRequestToJson(ChangePercRequest instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'valeur': instance.valeur,
-    };
-
-ChangePercResponse _$ChangePercResponseFromJson(Map<String, dynamic> json) =>
-    ChangePercResponse()
-      ..id = (json['id'] as num).toInt()
-      ..valeur = (json['valeur'] as num).toInt();
-
-Map<String, dynamic> _$ChangePercResponseToJson(ChangePercResponse instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'valeur': instance.valeur,
-    };
+    <String, dynamic>{};
 
 SignoutRequest _$SignoutRequestFromJson(Map<String, dynamic> json) =>
     SignoutRequest();

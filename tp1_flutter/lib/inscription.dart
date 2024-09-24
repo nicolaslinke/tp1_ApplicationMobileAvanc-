@@ -20,19 +20,6 @@ class _InscriptionState extends State<Inscription> {
   final TextEditingController PasswordConfirmTextController = TextEditingController();
   SignupRequest signupRequest = SignupRequest();
 
-  void getHttp() async {
-    try {
-      var response = await Dio().post('http://10.0.2.2:8787/api/id/signup');
-      print('RESPONSE : ' + response.toString());
-      this.signupRequest = SignupRequest.fromJson(response.data);
-      setState(() {
-
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +63,8 @@ class _InscriptionState extends State<Inscription> {
               onPressed: () async {
                 try {
                   SignupRequest req = SignupRequest();
-                  req.username = UsernameTextController.toString();
-                  req.password = 'password';
+                  req.username = UsernameTextController.text;
+                  req.password = PasswordTextController.text;
                   var reponse = await signup(req);
                   print(reponse);
                   Navigator.pushNamed(context, '/');

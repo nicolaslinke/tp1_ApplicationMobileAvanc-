@@ -1,6 +1,9 @@
 import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:tp1_flutter/lib_http.dart';
+import 'package:tp1_flutter/transfert.dart';
 
 
 class Accueil extends StatefulWidget {
@@ -15,24 +18,48 @@ class Accueil extends StatefulWidget {
 class ListeElement {
   late String nom;
   late int pourcCompl;
-  late int pourcEcoule;
+  late double pourcEcoule;
   late DateTime dateLim;
 }
 
 class _AccueilState extends State<Accueil> {
-  List<ListeElement> listeEnMemoire = [];
+  List<GetTasksResponse> listTask = [];
+  List<ListeElement> listDisplay = [];
 
   @override
   void initState() {
-    super.initState();
-    listeEnMemoire = [];
-    for (var i = 0; i < 100; i++) {
-      ListeElement element = ListeElement();
-      element.pourcCompl = (i + 5) * 10 + 3;
-      element.pourcEcoule = (i + 5) * 10 + 3;
-      element.nom =
-      "element #${i.toRadixString(16)}"; // donne la repr d'un nombre en base 16 genre hexa quoi
-      listeEnMemoire.add(element);
+    try {
+      super.initState();
+      getTasks();
+
+      for (var i = 0; i < listTask.length; i++) {
+        ListeElement element = ListeElement();
+        element.pourcCompl = listTask[i].percentageDone;
+        element.pourcEcoule = listTask[i].percentageTimeSpent;
+        element.nom = listTask[i].name;
+        "element #${i.toRadixString(16)}"; // donne la repr d'un nombre en base 16 genre hexa quoi
+        listDisplay.add(element);
+      }
+
+    } on DioError catch (e) {
+      print(e);
+      String message = e.response!.data;
+      if (message == "BadCredentialsException") {
+        print('login deja utilise');
+      } else {
+        print('autre erreurs');
+      }
+    }
+  }
+
+  Future<void> getTask() async {
+    try {
+      listTask = await getTasks();
+      setState(() {
+        // Update your state here if necessary
+      });
+    } catch (error) {
+      // Handle the error appropriately
     }
   }
 
@@ -64,17 +91,27 @@ class _AccueilState extends State<Accueil> {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: listeEnMemoire.length,
+                itemCount: listTask.length,
                 itemBuilder: (context, index) {
-                  return GestureDetector(
-                    child: Text(listeEnMemoire[index].nom + '  ' + listeEnMemoire[index].pourcCompl.toString()),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/consultation');
-                    },
+                  return Row(
+                    children: [
+                      GestureDetector(
+                        child: Text(listTask[index].name),
+                        onTap: () {
+                        Navigator.pushNamed(context, '/consultation');
+                        },
+                      ),
+                      GestureDetector(
+                        child: Text('      allo'),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/consultation');
+                        },
+                      ),
+                    ],
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),
