@@ -28,7 +28,6 @@ class MyApp extends StatelessWidget {
         '/': (context) => MyHomePage(title: "Test"),
         '/inscription': (context) => Inscription(title: "Inscription",),
         '/accueil': (context) => Accueil(title: "Accueil",),
-        '/consultation': (context) => Consultation(title: "Consultation",),
         '/creation': (context) => Creation(title: "Creation",),
       },
     );
@@ -95,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () async {
                   try {
                     SigninRequest req = SigninRequest();
-                    req.username = 'allo';
+                    req.username = 'alllo';
                     req.password = 'Password';
                     var reponse = await signin(req);
                     print(reponse);

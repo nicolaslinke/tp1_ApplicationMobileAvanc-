@@ -41,6 +41,19 @@ Future<SigninResponse> signin(SigninRequest req) async {
 }
 
 
+Future<GetTasksResponse> getTask(int taskID) async {
+  try {
+    var response = await SingletonDio.getDio()
+        .get('http://10.0.2.2:8787/api/detail/' + taskID.toString());
+    print(response);
+    return GetTasksResponse.fromJson(response.data);
+  } catch (e) {
+    print(e);
+    rethrow;
+  }
+}
+
+
 Future<SigninResponse> perc(int taskID, int value) async {
   try {
     var response = await SingletonDio.getDio()
