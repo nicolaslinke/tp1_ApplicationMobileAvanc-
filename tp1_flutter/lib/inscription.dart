@@ -68,8 +68,25 @@ class _InscriptionState extends State<Inscription> {
                   var reponse = await signup(req);
                   print(reponse);
                   Navigator.pushNamed(context, '/');
-                } on DioError catch (e) {
-                  print(e);
+                } on DioException catch (e) {
+                  var response = e.response.toString();
+                  if (response == null)
+                  {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Pas de réseau")
+                    ));
+                  } else if (response == "UsernameTooShort")
+                  {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Le nom d\'utilisateur est trop court")
+                    ));
+                  } else if (response == "PasswordTooShort")
+                  {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Le mot de passe est trop court")
+                    ));
+                  }
+                  print("LOGCAT : " + e.response.toString());
                   String message = e.response!.data;
                   if (message == "BadCredentialsException") {
                     print('login deja utilise');
