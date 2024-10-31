@@ -53,13 +53,26 @@ Future<GetTasksResponse> getTask(int taskID) async {
   }
 }
 
+Future<String> signout() async {
+  try {
+    var response = await SingletonDio.getDio()
+        .post('http://10.0.2.2:8787/api/id/signout');
+    print(response);
+    return "ok";
+  } catch (e) {
+    print(e);
+    rethrow;
+  }
+}
 
-Future<SigninResponse> perc(int taskID, int value) async {
+
+
+Future<String> changeTask(int taskID, int value) async {
   try {
     var response = await SingletonDio.getDio()
         .get('http://10.0.2.2:8787/api/progress/' + taskID.toString() + '/' + value.toString());
     print(response);
-    return SigninResponse.fromJson(response.data);
+    return "ok";
   } catch (e) {
     print(e);
     rethrow;
@@ -79,15 +92,28 @@ Future<String> addTask(AddTaskRequest req) async {
   }
 }
 
+
+Future<String> deleteTask(int req) async {
+  try {
+    var response = await SingletonDio.getDio()
+        .delete('http://10.0.2.2:8787/api/delete/' + req.toString());
+    print(response);
+    return "ok";
+  } catch (e) {
+    print(e);
+    rethrow;
+  }
+}
+
 Future<List<GetTasksResponse>> getTasks() async {
   try {
     var response = await SingletonDio.getDio()
         .get('http://10.0.2.2:8787/api/home',
-    options: Options(
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    ));
+        options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+            }
+        ));
     print(response);
     var listJSON = response.data as List;
     var listTask = listJSON.map((elementJSON) {

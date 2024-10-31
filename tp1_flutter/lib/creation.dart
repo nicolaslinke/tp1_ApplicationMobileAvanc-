@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tp1_flutter/drawer.dart';
 import 'package:tp1_flutter/lib_http.dart';
 import 'package:tp1_flutter/transfert.dart';
 
@@ -43,6 +44,7 @@ class _CreationState extends State<Creation> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
+      drawer : const LeTiroir(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -73,7 +75,7 @@ class _CreationState extends State<Creation> {
                 try {
                   AddTaskRequest req = AddTaskRequest();
                   req.name = UsernameTextController.text;
-                  req.deadline = DateTime.now(); //selectedDate;
+                  req.deadline = selectedDate; //selectedDate;
                   var reponse = await addTask(req);
                   print(reponse);
 

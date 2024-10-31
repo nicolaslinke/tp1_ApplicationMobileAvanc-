@@ -57,6 +57,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  final TextEditingController UsernameTextController = TextEditingController();
+  final TextEditingController PasswordTextController = TextEditingController();
+
   SignupRequest signupRequest = SignupRequest();
 
   void getHttp() async {
@@ -88,44 +91,46 @@ class _MyHomePageState extends State<MyHomePage> {
               'Connexion',
             ),
             TextFormField(
+              controller: UsernameTextController,
               decoration: const InputDecoration(
                 labelText: 'Nom d\'utilisateur',
               ),
             ),
             TextFormField(
+              controller: PasswordTextController,
               decoration: const InputDecoration(
                 labelText: 'Mot de passe',
               ),
               obscureText: true,
             ),
             TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.amber,
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.amber,
 
-                ),
-                onPressed: () async {
-                  try {
-                    SigninRequest req = SigninRequest();
-                    req.username = 'alllo';
-                    req.password = 'Password';
-                    var reponse = await signin(req);
-                    print(reponse);
-                    Singleton.instance.username = reponse.username;
-                    Navigator.pushNamed(context, '/');
-                  } on DioError catch (e) {
-                    print(e);
-                    String message = e.response!.data;
-                    if (message == "BadCredentialsException") {
-                      print('login deja utilise');
-                    } else {
-                      print('autre erreurs');
-                    }
+              ),
+              onPressed: () async {
+                try {
+                  SigninRequest req = SigninRequest();
+                  req.username = UsernameTextController.text;
+                  req.password = PasswordTextController.text;
+                  var reponse = await signin(req);
+                  print(reponse);
+                  Singleton.instance.username = reponse.username;
+                  Navigator.pushNamed(context, '/');
+                } on DioError catch (e) {
+                  print(e);
+                  String message = e.response!.data;
+                  if (message == "BadCredentialsException") {
+                    print('login deja utilise');
+                  } else {
+                    print('autre erreurs');
                   }
-                  Navigator.pushNamed(context, '/accueil');
-                },
-                child: Text(
-                    'Connexion',
-                ),
+                }
+                Navigator.pushNamed(context, '/accueil');
+              },
+              child: Text(
+                'Connexion',
+              ),
             ),
             TextButton(
               style: TextButton.styleFrom(

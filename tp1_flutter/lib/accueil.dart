@@ -27,14 +27,23 @@ class _AccueilState extends State<Accueil> {
 
   Future<void> getTask() async {
     try {
-      listTask = await getTasks();
-      setState(() {
+        listTask = await getTasks();
+        setState(() {
         hasError = false; // Réinitialiser l'erreur si la récupération réussie
       });
     } catch (error) {
       setState(() {
         hasError = true; // Mettre à jour l'état d'erreur
       });
+      print(error); // Afficher l'erreur pour le débogage
+    }
+  }
+
+  Future<void> delete(int id) async {
+    try {
+      await deleteTask(id);
+      getTask();
+    } catch (error) {
       print(error); // Afficher l'erreur pour le débogage
     }
   }
@@ -79,17 +88,33 @@ class _AccueilState extends State<Accueil> {
                     return GestureDetector(
                       child: Row(
                         children: [
-                          Expanded(child: Text(listTask[index].name)),
-                          Expanded(child: Text(' ${listTask[index].percentageDone}')),
-                          Expanded(child: Text(' ${listTask[index].percentageTimeSpent}')),
-                          Expanded(child: Text(' ${listTask[index].deadline}')),
+                          Expanded(
+                            child: Text(listTask[index].name),
+                          ),
+                          Expanded(
+                            child: Text(listTask[index].percentageDone.toString() + "%"),
+                          ),
+                          Expanded(
+                            child: Text(listTask[index].percentageTimeSpent.toString() + "%"),
+                          ),
+                          Expanded(
+                            child: Text(listTask[index].deadline.toString()),
+                          ),
+                          Expanded(
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.amber,
+                              ),
+                              onPressed: () => delete(listTask[index].id), // Rafraîchir les tâches
+                              child: const Text('Supprimer'),
+                            ),
+                          ),
                         ],
                       ),
                       onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => Consultation(id: listTask[index].id),
-                        ),
+                          context,
+                          MaterialPageRoute(builder: (_) =>
+                              Consultation(id: listTask[index].id))
                       ),
                     );
                   },
