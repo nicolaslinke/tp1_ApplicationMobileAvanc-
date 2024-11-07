@@ -107,8 +107,18 @@ class _CreationState extends State<Creation> {
                 'Créé la tâche',
               ),
             ),
-            (imagePath=="")?Text("Selectionner une image")
+            (imagePath=="")?Text("Selectionnez une image")
                 :Image.file(File(imagePath )),
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.amber,
+              ),
+              onPressed:
+                getImage,
+              child: Text(
+                'Selectionner une image',
+              ),
+            ),
           ],
         ),
       ),

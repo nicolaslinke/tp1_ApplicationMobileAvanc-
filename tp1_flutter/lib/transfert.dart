@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
