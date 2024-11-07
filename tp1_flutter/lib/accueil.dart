@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tp1_flutter/consultation.dart';
 import 'package:tp1_flutter/drawer.dart';
 import 'package:tp1_flutter/lib_http.dart';
@@ -18,11 +19,21 @@ class Accueil extends StatefulWidget {
 class _AccueilState extends State<Accueil> {
   List<GetTasksResponse> listTask = [];
   bool hasError = false; // Ajout d'un état pour gérer les erreurs
+  String imagePath = "";
 
   @override
   void initState() {
     super.initState();
     getTask();
+  }
+
+  void getImage() async {
+    ImagePicker picker = ImagePicker();
+    XFile? pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    imagePath = pickedImage!.path;
+    setState(() {
+
+    });
   }
 
   Future<void> getTask() async {

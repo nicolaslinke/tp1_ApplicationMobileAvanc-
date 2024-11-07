@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tp1_flutter/drawer.dart';
 import 'package:tp1_flutter/lib_http.dart';
 import 'package:tp1_flutter/transfert.dart';
@@ -16,8 +17,18 @@ class Consultation extends StatefulWidget {
 
 class _ConsultationState extends State<Consultation> {
   final TextEditingController PourcentageTextController = TextEditingController();
+  String imagePath = "";
 
   GetTasksResponse task = new GetTasksResponse();
+
+  void getImage() async {
+    ImagePicker picker = ImagePicker();
+    XFile? pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    imagePath = pickedImage!.path;
+    setState(() {
+
+    });
+  }
 
   @override
   void initState() {

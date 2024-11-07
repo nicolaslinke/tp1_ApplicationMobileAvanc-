@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:tp1_flutter/drawer.dart';
 import 'package:tp1_flutter/lib_http.dart';
@@ -22,6 +25,16 @@ class _CreationState extends State<Creation> {
   final TextEditingController UsernameTextController = TextEditingController();
   DateTime selectedDate = DateTime.now();
   String formattedDate = "${DateTime.now().year.toString()}-${DateTime.now().month.toString().padLeft(2,'0')}-${DateTime.now().day.toString().padLeft(2,'0')}";
+  String imagePath = "";
+
+  void getImage() async {
+    ImagePicker picker = ImagePicker();
+    XFile? pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    imagePath = pickedImage!.path;
+    setState(() {
+
+    });
+  }
 
   _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -94,6 +107,8 @@ class _CreationState extends State<Creation> {
                 'Créé la tâche',
               ),
             ),
+            (imagePath=="")?Text("Selectionner une image")
+                :Image.file(File(imagePath )),
           ],
         ),
       ),
