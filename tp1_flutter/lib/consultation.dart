@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,10 +26,24 @@ class _ConsultationState extends State<Consultation> {
   void getImage() async {
     ImagePicker picker = ImagePicker();
     XFile? pickedImage = await picker.pickImage(source: ImageSource.gallery);
-    imagePath = pickedImage!.path;
-    setState(() {
 
-    });
+    if (pickedImage != null) {
+      FormData formData = FormData.fromMap({
+        "file": await MultipartFile.fromFile(
+            pickedImage.path, filename: pickedImage.name),
+        "taskID": task.id
+      });
+
+      Dio dio = await SingletonDio.getDio();
+
+      var response =
+      await dio.post('http://10.0.2.2:8787/file', data: formData);
+
+      print(response);
+
+      imagePath = pickedImage!.path;
+      setState(() {});
+    }
   }
 
   @override
@@ -107,6 +123,21 @@ class _ConsultationState extends State<Consultation> {
               },
               child: Text(
                 'Modifier',
+              ),
+            ),
+            Expanded(
+              child:
+              (imagePath=="")?Text("Selectionnez une image")
+                  :Image.file(File(imagePath )),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.amber,
+              ),
+              onPressed:
+              getImage,
+              child: Text(
+                'Selectionner une image',
               ),
             ),
           ],

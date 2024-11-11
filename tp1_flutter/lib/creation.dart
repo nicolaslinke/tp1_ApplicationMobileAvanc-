@@ -27,15 +27,6 @@ class _CreationState extends State<Creation> {
   String formattedDate = "${DateTime.now().year.toString()}-${DateTime.now().month.toString().padLeft(2,'0')}-${DateTime.now().day.toString().padLeft(2,'0')}";
   String imagePath = "";
 
-  void getImage() async {
-    ImagePicker picker = ImagePicker();
-    XFile? pickedImage = await picker.pickImage(source: ImageSource.gallery);
-    imagePath = pickedImage!.path;
-    setState(() {
-
-    });
-  }
-
   _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -105,18 +96,6 @@ class _CreationState extends State<Creation> {
               },
               child: Text(
                 'Créé la tâche',
-              ),
-            ),
-            (imagePath=="")?Text("Selectionnez une image")
-                :Image.file(File(imagePath )),
-            TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.amber,
-              ),
-              onPressed:
-                getImage,
-              child: Text(
-                'Selectionner une image',
               ),
             ),
           ],
