@@ -17,9 +17,10 @@ class Consultation extends StatefulWidget {
   State<Consultation> createState() => _ConsultationState();
 }
 
-class _ConsultationState extends State<Consultation> {
+class _ConsultationState extends State<Consultation> with WidgetsBindingObserver {
   final TextEditingController PourcentageTextController = TextEditingController();
   String imagePath = "";
+  var image;
 
   GetTasksResponse task = new GetTasksResponse();
 
@@ -38,6 +39,7 @@ class _ConsultationState extends State<Consultation> {
 
       var response =
       await dio.post('http://10.0.2.2:8787/file', data: formData);
+      image = 'http://10.0.2.2:8787/file/' + response.toString();
 
       print(response);
 
@@ -49,6 +51,7 @@ class _ConsultationState extends State<Consultation> {
   @override
   void initState() {
     try {
+      WidgetsBinding.instance.addObserver(this);
       super.initState();
       getTaskRequest();
     } on DioError catch (e) {
@@ -62,9 +65,54 @@ class _ConsultationState extends State<Consultation> {
     }
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed)
+    {
+      try {
+        super.initState();
+        getTaskRequest();
+      } on DioError catch (e) {
+        print(e);
+        String message = e.response!.data;
+        if (message == "BadCredentialsException") {
+          print('login deja utilise');
+        } else {
+          print('autre erreurs');
+        }
+      }
+      setState(() {});
+    }
+  }
+
+  Future<void> delete(int id) async {
+    try {
+      await deleteTask(id);
+      Navigator.pushNamed(context, '/accueil');
+    } catch (error) {
+      print(error); // Afficher l'erreur pour le débogage
+    }
+  }
+
   Future<void> getTaskRequest() async {
     try {
       task = await getTask(widget.id);
+      if (task.photoId != 0)
+      {
+        Dio dio = await SingletonDio.getDio();
+
+        image =
+        'http://10.0.2.2:8787/file/' + task.photoId.toString();
+        print(image);
+      }
       setState(() {
         // Update your state here if necessary
       });
@@ -127,8 +175,8 @@ class _ConsultationState extends State<Consultation> {
             ),
             Expanded(
               child:
-              (imagePath=="")?Text("Selectionnez une image")
-                  :Image.file(File(imagePath )),
+              (image==null)?Text("Selectionnez une image")
+                  :Image.network(image),
             ),
             TextButton(
               style: TextButton.styleFrom(
@@ -139,6 +187,13 @@ class _ConsultationState extends State<Consultation> {
               child: Text(
                 'Selectionner une image',
               ),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.amber,
+              ),
+              onPressed: () => delete(task.id), // Rafraîchir les tâches
+              child: const Text('Supprimer'),
             ),
           ],
         ),

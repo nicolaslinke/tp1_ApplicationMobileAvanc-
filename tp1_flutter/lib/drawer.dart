@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tp1_flutter/Singleton.dart';
 import 'package:tp1_flutter/accueil.dart';
 
@@ -49,6 +50,10 @@ class LeTiroirState extends State<LeTiroir> {
           title: const Text("Déconnexion"),
           onTap: () {
             Singleton.instance.username = "";
+            SharedPreferences.getInstance().then((onValue) {
+              onValue.remove("username");
+              onValue.remove("password");
+            });
             Navigator.pushNamed(context, '/');
             // Then close the drawer
           },

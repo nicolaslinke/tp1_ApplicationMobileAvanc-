@@ -44,7 +44,7 @@ Future<SigninResponse> signin(SigninRequest req) async {
 Future<GetTasksResponse> getTask(int taskID) async {
   try {
     var response = await SingletonDio.getDio()
-        .get('http://10.0.2.2:8787/api/detail/' + taskID.toString());
+        .get('http://10.0.2.2:8787/api/detail/photo/' + taskID.toString());
     print(response);
     return GetTasksResponse.fromJson(response.data);
   } catch (e) {
@@ -108,7 +108,7 @@ Future<String> deleteTask(int req) async {
 Future<List<GetTasksResponse>> getTasks() async {
   try {
     var response = await SingletonDio.getDio()
-        .get('http://10.0.2.2:8787/api/home',
+        .get('http://10.0.2.2:8787/api/home/photo',
         options: Options(
             headers: {
               'Content-Type': 'application/json',

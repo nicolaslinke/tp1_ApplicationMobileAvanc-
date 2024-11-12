@@ -19,7 +19,7 @@ class _InscriptionState extends State<Inscription> {
   final TextEditingController PasswordTextController = TextEditingController();
   final TextEditingController PasswordConfirmTextController = TextEditingController();
   SignupRequest signupRequest = SignupRequest();
-
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -55,43 +55,60 @@ class _InscriptionState extends State<Inscription> {
               ),
               obscureText: true,
             ),
+            (loading==true)?new Center(
+              child: new SizedBox(
+                height: 50.0,
+                width: 50.0,
+                child: new CircularProgressIndicator(
+                  value: null,
+                  strokeWidth: 7.0,
+                ),
+              ),
+            ):
             TextButton(
               style: TextButton.styleFrom(
                 backgroundColor: Colors.amber,
 
               ),
               onPressed: () async {
-                try {
-                  SignupRequest req = SignupRequest();
-                  req.username = UsernameTextController.text;
-                  req.password = PasswordTextController.text;
-                  var reponse = await signup(req);
-                  print(reponse);
-                  Navigator.pushNamed(context, '/');
-                } on DioException catch (e) {
-                  var response = e.response.toString();
-                  if (response == null)
-                  {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Pas de réseau")
-                    ));
-                  } else if (response == "UsernameTooShort")
-                  {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Le nom d\'utilisateur est trop court")
-                    ));
-                  } else if (response == "PasswordTooShort")
-                  {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Le mot de passe est trop court")
-                    ));
-                  }
-                  print("LOGCAT : " + e.response.toString());
-                  String message = e.response!.data;
-                  if (message == "BadCredentialsException") {
-                    print('login deja utilise');
-                  } else {
-                    print('autre erreurs');
+                if (loading == false) {
+                  try {
+                    loading = true;
+                    setState(() {
+
+                    });
+                    SignupRequest req = SignupRequest();
+                    req.username = UsernameTextController.text;
+                    req.password = PasswordTextController.text;
+                    var reponse = await signup(req);
+                    print(reponse);
+                    Navigator.pushNamed(context, '/');
+                  } on DioException catch (e) {
+                    loading = false;
+                    setState(() {
+
+                    });
+                    var response = e.response.toString();
+                    if (response == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Pas de réseau")
+                      ));
+                    } else if (response == "UsernameTooShort") {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Le nom d\'utilisateur est trop court")
+                      ));
+                    } else if (response == "PasswordTooShort") {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Le mot de passe est trop court")
+                      ));
+                    }
+                    print("LOGCAT : " + e.response.toString());
+                    String message = e.response!.data;
+                    if (message == "BadCredentialsException") {
+                      print('login deja utilise');
+                    } else {
+                      print('autre erreurs');
+                    }
                   }
                 }
               },

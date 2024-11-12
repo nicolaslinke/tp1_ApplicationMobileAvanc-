@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tp1_flutter/Singleton.dart';
 import 'package:tp1_flutter/inscription.dart';
 import 'package:tp1_flutter/accueil.dart';
@@ -59,8 +60,51 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final TextEditingController UsernameTextController = TextEditingController();
   final TextEditingController PasswordTextController = TextEditingController();
+  late SharedPreferences _prefs;
+  String username = "";
+  String password = "";
 
   SignupRequest signupRequest = SignupRequest();
+
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferences.getInstance().then((onValue) {
+      _prefs = onValue;
+      _obtenirPrefs();
+    });
+  }
+
+  _definirPrefs()  {
+    _prefs.setString('username', UsernameTextController.text);
+    _prefs.setString('password', PasswordTextController.text);
+  }
+
+  _obtenirPrefs() async {
+    username = _prefs.getString('username') ?? '';
+    password = _prefs.getString('password') ?? '';
+    if (username != '')
+    {
+      try {
+        SigninRequest req = SigninRequest();
+        req.username = username;
+        req.password = password;
+        var reponse = await signin(req);
+        print(reponse);
+        Singleton.instance.username = reponse.username;
+        Navigator.pushNamed(context, '/accueil');
+      } on DioError catch (e) {
+        print(e);
+        String message = e.response!.data;
+        if (message == "BadCredentialsException") {
+          print('login deja utilise');
+        } else {
+          print('autre erreurs');
+        }
+      }
+    }
+  }
+
 
   void getHttp() async {
     try {
@@ -116,7 +160,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   var reponse = await signin(req);
                   print(reponse);
                   Singleton.instance.username = reponse.username;
-                  Navigator.pushNamed(context, '/');
+                  _definirPrefs();
+                  Navigator.pushNamed(context, '/accueil');
                 } on DioError catch (e) {
                   print(e);
                   String message = e.response!.data;
@@ -126,7 +171,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     print('autre erreurs');
                   }
                 }
-                Navigator.pushNamed(context, '/accueil');
               },
               child: Text(
                 'Connexion',

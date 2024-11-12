@@ -100,6 +100,7 @@ class GetTasksResponse {
   int percentageDone = 0;
   double percentageTimeSpent = 0.0;
   DateTime deadline = DateTime.now();
+  int? photoId = 0;
 
   factory GetTasksResponse.fromJson(Map<String, dynamic> json) =>
       _$GetTasksResponseFromJson(json);

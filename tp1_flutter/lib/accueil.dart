@@ -16,15 +16,36 @@ class Accueil extends StatefulWidget {
   State<Accueil> createState() => _AccueilState();
 }
 
-class _AccueilState extends State<Accueil> {
+class _AccueilState extends State<Accueil> with WidgetsBindingObserver{
   List<GetTasksResponse> listTask = [];
   bool hasError = false; // Ajout d'un état pour gérer les erreurs
   String imagePath = "";
+  bool loading = true;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     getTask();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed)
+    {
+      loading = true;
+      listTask.clear();
+      getTask();
+      setState(() {});
+    }
   }
 
   void getImage() async {
@@ -48,15 +69,7 @@ class _AccueilState extends State<Accueil> {
       });
       print(error); // Afficher l'erreur pour le débogage
     }
-  }
-
-  Future<void> delete(int id) async {
-    try {
-      await deleteTask(id);
-      getTask();
-    } catch (error) {
-      print(error); // Afficher l'erreur pour le débogage
-    }
+    loading = false;
   }
 
   @override
@@ -72,12 +85,24 @@ class _AccueilState extends State<Accueil> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text('Accueil'),
+            (loading==true)?new Center(
+              child: new SizedBox(
+                height: 50.0,
+                width: 50.0,
+                child: new CircularProgressIndicator(
+                  value: null,
+                  strokeWidth: 7.0,
+                ),
+              ),
+            ):
             TextButton(
               style: TextButton.styleFrom(
                 backgroundColor: Colors.amber,
               ),
               onPressed: () {
-                Navigator.pushNamed(context, '/creation');
+                if (loading == false) {
+                  Navigator.pushNamed(context, '/creation');
+                }
               },
               child: const Text('Créer une tâche'),
             ),
@@ -112,21 +137,19 @@ class _AccueilState extends State<Accueil> {
                             child: Text(listTask[index].deadline.toString()),
                           ),
                           Expanded(
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                backgroundColor: Colors.amber,
-                              ),
-                              onPressed: () => delete(listTask[index].id), // Rafraîchir les tâches
-                              child: const Text('Supprimer'),
-                            ),
+                              child:
+                              (listTask[index].photoId==0)?Text("Pas d'image")
+                                  :Image.network('http://10.0.2.2:8787/file/' + listTask[index].photoId.toString()),
                           ),
                         ],
                       ),
-                      onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) =>
-                              Consultation(id: listTask[index].id))
-                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) =>
+                                Consultation(id: listTask[index].id))
+                        );
+                      }
                     );
                   },
                 ),

@@ -67,7 +67,8 @@ GetTasksResponse _$GetTasksResponseFromJson(Map<String, dynamic> json) =>
       ..name = json['name'] as String
       ..percentageDone = (json['percentageDone'] as num).toInt()
       ..percentageTimeSpent = (json['percentageTimeSpent'] as num).toDouble()
-      ..deadline = DateTime.parse(json['deadline'] as String);
+      ..deadline = DateTime.parse(json['deadline'] as String)
+      ..photoId = (json['photoId'] as num?)?.toInt();
 
 Map<String, dynamic> _$GetTasksResponseToJson(GetTasksResponse instance) =>
     <String, dynamic>{
@@ -76,6 +77,7 @@ Map<String, dynamic> _$GetTasksResponseToJson(GetTasksResponse instance) =>
       'percentageDone': instance.percentageDone,
       'percentageTimeSpent': instance.percentageTimeSpent,
       'deadline': instance.deadline.toIso8601String(),
+      'photoId': instance.photoId,
     };
 
 ChangePercRequest _$ChangePercRequestFromJson(Map<String, dynamic> json) =>

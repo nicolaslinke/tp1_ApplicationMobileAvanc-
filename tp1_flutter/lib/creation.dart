@@ -26,6 +26,7 @@ class _CreationState extends State<Creation> {
   DateTime selectedDate = DateTime.now();
   String formattedDate = "${DateTime.now().year.toString()}-${DateTime.now().month.toString().padLeft(2,'0')}-${DateTime.now().day.toString().padLeft(2,'0')}";
   String imagePath = "";
+  bool loading = false;
 
   _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -76,21 +77,25 @@ class _CreationState extends State<Creation> {
                 backgroundColor: Colors.amber,
               ),
               onPressed: () async {
-                try {
-                  AddTaskRequest req = AddTaskRequest();
-                  req.name = UsernameTextController.text;
-                  req.deadline = selectedDate; //selectedDate;
-                  var reponse = await addTask(req);
-                  print(reponse);
+                if (loading == false) {
+                  try {
+                    loading = true;
+                    AddTaskRequest req = AddTaskRequest();
+                    req.name = UsernameTextController.text;
+                    req.deadline = selectedDate; //selectedDate;
+                    var reponse = await addTask(req);
+                    print(reponse);
 
-                  Navigator.pushNamed(context, '/accueil');
-                } on DioError catch (e) {
-                  print(e);
-                  String message = e.response!.data;
-                  if (message == "BadCredentialsException") {
-                    print('login deja utilise');
-                  } else {
-                    print('autre erreurs');
+                    Navigator.pushNamed(context, '/accueil');
+                  } on DioError catch (e) {
+                    print(e);
+                    loading = false;
+                    String message = e.response!.data;
+                    if (message == "BadCredentialsException") {
+                      print('login deja utilise');
+                    } else {
+                      print('autre erreurs');
+                    }
                   }
                 }
               },
