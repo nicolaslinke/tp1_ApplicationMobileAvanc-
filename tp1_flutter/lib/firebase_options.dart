@@ -87,4 +87,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'taskproject-tp3.firebasestorage.app',
     measurementId: 'G-HESW1T736G',
   );
+
 }
