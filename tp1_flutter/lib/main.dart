@@ -229,6 +229,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Inscription',
               ),
             ),
+
+            //Firebase Auth
             TextButton(
               style: TextButton.styleFrom(
                 backgroundColor: Colors.amber,
@@ -240,6 +242,14 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text(
                 'Sign in with google',
               ),
+            ),
+            MaterialButton(
+              onPressed: () async {
+                await GoogleSignIn().signOut();
+                await FirebaseAuth.instance.signOut();
+                setState(() {});
+              },
+              child: Text("signout from google"),
             ),
           ],
         ),
