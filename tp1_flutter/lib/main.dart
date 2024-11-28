@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tp1_flutter/Singleton.dart';
 import 'package:tp1_flutter/inscription.dart';
@@ -76,10 +78,42 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+
+    //Firebase auth
+    FirebaseAuth.instance
+        .authStateChanges()
+        .listen((User? user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in! ' + user.email!);
+      }
+    }
+    );
+    //
+
     SharedPreferences.getInstance().then((onValue) {
       _prefs = onValue;
       _obtenirPrefs();
     });
+  }
+
+  //Firebase auth
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   _definirPrefs()  {
@@ -193,6 +227,18 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: Text(
                 'Inscription',
+              ),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.amber,
+
+              ),
+              onPressed: () {
+                signInWithGoogle();
+              },
+              child: Text(
+                'Sign in with google',
               ),
             ),
           ],
