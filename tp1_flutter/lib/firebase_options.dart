@@ -64,6 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '574000022604',
     projectId: 'taskproject-tp3',
     storageBucket: 'taskproject-tp3.firebasestorage.app',
+    androidClientId: '574000022604-5m9sida3sgf9ag88rhpqq6js5oqe66cj.apps.googleusercontent.com',
     iosClientId: '574000022604-oj9ak8374pjvobqp6iqso5fekuefg2da.apps.googleusercontent.com',
     iosBundleId: 'com.example.tp1Flutter',
   );
@@ -74,6 +75,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '574000022604',
     projectId: 'taskproject-tp3',
     storageBucket: 'taskproject-tp3.firebasestorage.app',
+    androidClientId: '574000022604-5m9sida3sgf9ag88rhpqq6js5oqe66cj.apps.googleusercontent.com',
     iosClientId: '574000022604-oj9ak8374pjvobqp6iqso5fekuefg2da.apps.googleusercontent.com',
     iosBundleId: 'com.example.tp1Flutter',
   );

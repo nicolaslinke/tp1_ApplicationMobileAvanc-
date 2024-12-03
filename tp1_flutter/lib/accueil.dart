@@ -20,7 +20,7 @@ class _AccueilState extends State<Accueil> with WidgetsBindingObserver{
   List<GetTasksResponse> listTask = [];
   bool hasError = false; // Ajout d'un état pour gérer les erreurs
   String imagePath = "";
-  bool loading = true;
+  bool loading = false;
 
   @override
   void initState() {

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,6 +28,18 @@ class _CreationState extends State<Creation> {
   String formattedDate = "${DateTime.now().year.toString()}-${DateTime.now().month.toString().padLeft(2,'0')}-${DateTime.now().day.toString().padLeft(2,'0')}";
   String imagePath = "";
   bool loading = false;
+
+  void addTask() async
+  {
+    CollectionReference tasksCollection = FirebaseFirestore.instance.collection('tasks');
+    tasksCollection.add({
+      'name':UsernameTextController.text,
+      'percentageDone': 0,
+      'percentageTimeSpent': 0.0,
+      'deadline': selectedDate,
+      'photoId': 0
+    });
+  }
 
   _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -80,11 +93,12 @@ class _CreationState extends State<Creation> {
                 if (loading == false) {
                   try {
                     loading = true;
+                    addTask();
                     AddTaskRequest req = AddTaskRequest();
                     req.name = UsernameTextController.text;
                     req.deadline = selectedDate; //selectedDate;
-                    var reponse = await addTask(req);
-                    print(reponse);
+                    //var reponse = await addTask(req);
+                    //print(reponse);
 
                     Navigator.pushNamed(context, '/accueil');
                   } on DioError catch (e) {

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tp1_flutter/lib_http.dart';
 import 'package:tp1_flutter/transfert.dart';
@@ -20,6 +21,25 @@ class _InscriptionState extends State<Inscription> {
   final TextEditingController PasswordConfirmTextController = TextEditingController();
   SignupRequest signupRequest = SignupRequest();
   bool loading = false;
+
+  Future<void> inscription() async
+  {
+    try {
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: UsernameTextController.text,
+        password: PasswordTextController.text,
+      );
+      Navigator.pushNamed(context, '/accueil');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,12 +97,12 @@ class _InscriptionState extends State<Inscription> {
                     setState(() {
 
                     });
-                    SignupRequest req = SignupRequest();
-                    req.username = UsernameTextController.text;
-                    req.password = PasswordTextController.text;
-                    var reponse = await signup(req);
-                    print(reponse);
-                    Navigator.pushNamed(context, '/');
+                    //SignupRequest req = SignupRequest();
+                    //req.username = UsernameTextController.text;
+                    //req.password = PasswordTextController.text;
+                    //var reponse = await signup(req);
+                    //print(reponse);
+                    inscription();
                   } on DioException catch (e) {
                     loading = false;
                     setState(() {
