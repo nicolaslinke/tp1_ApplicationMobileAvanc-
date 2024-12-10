@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:tp1_flutter/drawer.dart';
 import 'package:tp1_flutter/lib_http.dart';
+import 'package:tp1_flutter/task.dart';
 import 'package:tp1_flutter/transfert.dart';
 
 
@@ -31,14 +33,17 @@ class _CreationState extends State<Creation> {
 
   void addTask() async
   {
-    CollectionReference tasksCollection = FirebaseFirestore.instance.collection('tasks');
-    tasksCollection.add({
-      'name':UsernameTextController.text,
-      'percentageDone': 0,
-      'percentageTimeSpent': 0.0,
-      'deadline': selectedDate,
-      'photoId': 0
-    });
+    CollectionReference tasksCollection = FirebaseFirestore.instance
+      .collection('user')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('tasks')
+        .withConverter<Task>(
+        fromFirestore: (doc, _) => Task.fromJson(doc.data()!),
+        toFirestore: (task, _) => task.toJson(),
+      );
+
+    Task task = Task(name: UsernameTextController.text);
+    tasksCollection.add(task);
   }
 
   _selectDate(BuildContext context) async {

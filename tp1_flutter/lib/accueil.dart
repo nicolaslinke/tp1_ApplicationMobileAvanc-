@@ -1,10 +1,13 @@
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tp1_flutter/consultation.dart';
 import 'package:tp1_flutter/drawer.dart';
 import 'package:tp1_flutter/lib_http.dart';
+import 'package:tp1_flutter/task.dart';
 import 'package:tp1_flutter/transfert.dart';
 
 class Accueil extends StatefulWidget {
@@ -21,12 +24,13 @@ class _AccueilState extends State<Accueil> with WidgetsBindingObserver{
   bool hasError = false; // Ajout d'un état pour gérer les erreurs
   String imagePath = "";
   bool loading = false;
+  List<QueryDocumentSnapshot<Task>>? taskDocs;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    getTask();
+    getTasksFireBase();
   }
 
   @override
@@ -71,6 +75,23 @@ class _AccueilState extends State<Accueil> with WidgetsBindingObserver{
     }
     loading = false;
   }
+  void getTasksFireBase() async
+  {
+    CollectionReference<Task> tasksCollection = FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('tasks')
+        .withConverter<Task>(
+          fromFirestore: (doc, _) => Task.fromJson(doc.data()!),
+          toFirestore: (task, _) => task.toJson(),
+        );
+    QuerySnapshot<Task> result = await tasksCollection.get();
+    taskDocs = result.docs;
+    loading = false;
+    setState(() {
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +106,8 @@ class _AccueilState extends State<Accueil> with WidgetsBindingObserver{
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text('Accueil'),
-            (loading==true)?new Center(
+            (loading==true)?
+            new Center(
               child: new SizedBox(
                 height: 50.0,
                 width: 50.0,
@@ -116,40 +138,26 @@ class _AccueilState extends State<Accueil> with WidgetsBindingObserver{
                 onPressed: getTask, // Rafraîchir les tâches
                 child: const Text('Rafraîchir'),
               ),
-            ] else ...[
+            ] else  if (taskDocs == null) ...[] else...[
               Expanded(
                 child: ListView.builder(
-                  itemCount: listTask.length,
+                  itemCount: taskDocs?.length,
                   itemBuilder: (context, index) {
                     return GestureDetector(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(listTask[index].name),
-                          ),
-                          Expanded(
-                            child: Text(listTask[index].percentageDone.toString() + "%"),
-                          ),
-                          Expanded(
-                            child: Text(listTask[index].percentageTimeSpent.toString() + "%"),
-                          ),
-                          Expanded(
-                            child: Text(listTask[index].deadline.toString()),
-                          ),
-                          Expanded(
-                              child:
-                              (listTask[index].photoId==0)?Text("Pas d'image")
-                                  :Image.network('http://10.0.2.2:8787/file/' + listTask[index].photoId.toString()),
-                          ),
-                        ],
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) =>
-                                Consultation(id: listTask[index].id))
-                        );
-                      }
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(taskDocs![index].data().name),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) =>
+                                  Consultation(id: listTask[index].id))
+                          );
+                        }
                     );
                   },
                 ),
