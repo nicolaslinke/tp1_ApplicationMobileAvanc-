@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tp1_flutter/drawer.dart';
 import 'package:tp1_flutter/lib_http.dart';
 import 'package:tp1_flutter/task.dart';
@@ -25,30 +26,46 @@ class _ConsultationState extends State<Consultation> with WidgetsBindingObserver
   String imagePath = "";
   Task taskFirebase = new Task(name: "", creationDate: DateTime.now(), endDate: DateTime.now(), percCompletion: 0);
   var image;
+  bool loading = true;
+  var _imageFile;
+  var _publicUrl;
 
   GetTasksResponse task = new GetTasksResponse();
 
-  void getImage() async {
+  void sendImage() async {
     ImagePicker picker = ImagePicker();
     XFile? pickedImage = await picker.pickImage(source: ImageSource.gallery);
 
+    final supabase = Supabase.instance.client;
+
+    String bucketid = 'supabucket';
+
+    try {
+      await supabase
+          .storage
+          .createBucket(bucketid, BucketOptions(public: true));
+    } on StorageException catch (e) {
+      if (e.error == "Duplicate") {
+        // Le bucket existe déjà
+        print(e);
+      }
+    }
     if (pickedImage != null) {
-      FormData formData = FormData.fromMap({
-        "file": await MultipartFile.fromFile(
-            pickedImage.path, filename: pickedImage.name),
-        "taskID": task.id
-      });
+      //TODO doc: https://supabase.com/docs/reference/dart/storage-from-upload
+      final String fullPath = await supabase
+          .storage
+          .from(bucketid)
+          .upload(
+        //TODO Mettre un nom unique
+          pickedImage.name,
+          File(pickedImage.path)
+      );
 
-      Dio dio = await SingletonDio.getDio();
-
-      var response =
-      await dio.post('http://10.0.2.2:8787/file', data: formData);
-      image = 'http://10.0.2.2:8787/file/' + response.toString();
-
-      print(response);
-
-      imagePath = pickedImage!.path;
-      setState(() {});
+      //TODO doc: https://supabase.com/docs/reference/dart/storage-from-getpublicurl
+      _publicUrl = supabase
+          .storage
+          .from(bucketid)
+          .getPublicUrl(pickedImage.name);
     }
   }
 
@@ -99,10 +116,25 @@ class _ConsultationState extends State<Consultation> with WidgetsBindingObserver
 
   Future<void> delete(int id) async {
     try {
-      await deleteTask(id);
+      CollectionReference<Task> tasksCollection = FirebaseFirestore.instance
+          .collection('user')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('tasks')
+          .withConverter<Task>(
+        fromFirestore: (doc, _) => Task.fromJson(doc.data()!),
+        toFirestore: (task, _) => task.toJson(),
+      );
+      DocumentReference taskDoc = tasksCollection.doc(widget.id);
+      taskDoc.delete();
       Navigator.pushNamed(context, '/accueil');
-    } catch (error) {
-      print(error); // Afficher l'erreur pour le débogage
+    } on DioError catch (e) {
+      print(e);
+      String message = e.response!.data;
+      if (message == "BadCredentialsException") {
+        print('login deja utilise');
+      } else {
+        print('autre erreurs');
+      }
     }
   }
 
@@ -118,11 +150,9 @@ class _ConsultationState extends State<Consultation> with WidgetsBindingObserver
       );
       QuerySnapshot<Task> result = await tasksCollection.get();
       taskFirebase = result.docs.firstWhere((Task) => Task.id == widget.id).data();
+      loading = false;
       setState(() {
 
-      });
-      setState(() {
-        // Update your state here if necessary
       });
     } catch (error) {
       // Handle the error appropriately
@@ -141,6 +171,7 @@ class _ConsultationState extends State<Consultation> with WidgetsBindingObserver
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            if (loading == false) ...[
             const Text(
               'Consultation',
             ),
@@ -196,6 +227,7 @@ class _ConsultationState extends State<Consultation> with WidgetsBindingObserver
                 'Modifier',
               ),
             ),
+            ],
             Expanded(
               child:
               (image==null)?Text("Selectionnez une image")
@@ -206,7 +238,7 @@ class _ConsultationState extends State<Consultation> with WidgetsBindingObserver
                 backgroundColor: Colors.amber,
               ),
               onPressed:
-              getImage,
+              sendImage,
               child: Text(
                 'Selectionner une image',
               ),

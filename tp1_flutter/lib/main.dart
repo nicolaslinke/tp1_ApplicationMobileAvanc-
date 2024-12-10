@@ -1,8 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart'  as firebase_auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tp1_flutter/Singleton.dart';
 import 'package:tp1_flutter/inscription.dart';
 import 'package:tp1_flutter/accueil.dart';
@@ -16,11 +17,16 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'firebase_options.dart';
 
+const supabaseUrl = 'https://emoryygsfeplxoxwdois.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtb3J5eWdzZmVwbHhveHdkb2lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM4NTE3NjAsImV4cCI6MjA0OTQyNzc2MH0.-CuITrECFo5hotsMR8Ut7pdEst8ONVIL7ZHLQxPiOl4';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseKey);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(MyApp());
 }
 
@@ -80,9 +86,9 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     //Firebase auth
-    FirebaseAuth.instance
+    firebase_auth.FirebaseAuth.instance
         .authStateChanges()
-        .listen((User? user) {
+        .listen((firebase_auth.User? user) {
       if (user == null) {
         print('User is currently signed out!');
       } else {
@@ -99,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //Firebase auth
-  Future<UserCredential> signInWithGoogle() async {
+  Future<firebase_auth.UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -107,13 +113,14 @@ class _MyHomePageState extends State<MyHomePage> {
     final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
     // Create a new credential
-    final credential = GoogleAuthProvider.credential(
+    final credential = firebase_auth.GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
 
+    Navigator.pushNamed(context, '/accueil');
     // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+    return await firebase_auth.FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   _definirPrefs()  {
@@ -195,13 +202,13 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               onPressed: () async {
                 try {
-                  final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                  final credential = await firebase_auth.FirebaseAuth.instance.signInWithEmailAndPassword(
                       email: UsernameTextController.text,
                       password: PasswordTextController.text
                   );
                   Singleton.instance.username = UsernameTextController.text;
                   Navigator.pushNamed(context, '/accueil');
-                } on FirebaseAuthException catch (e) {
+                } on firebase_auth.FirebaseAuthException catch (e) {
                   if (e.code == 'user-not-found') {
                     print('No user found for that email.');
                   } else if (e.code == 'wrong-password') {
@@ -260,7 +267,7 @@ class _MyHomePageState extends State<MyHomePage> {
             MaterialButton(
               onPressed: () async {
                 await GoogleSignIn().signOut();
-                await FirebaseAuth.instance.signOut();
+                await firebase_auth.FirebaseAuth.instance.signOut();
                 setState(() {});
               },
               child: Text("signout from google"),
