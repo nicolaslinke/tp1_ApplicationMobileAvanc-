@@ -149,6 +149,15 @@ class _AccueilState extends State<Accueil> with WidgetsBindingObserver{
                             Expanded(
                               child: Text(taskDocs![index].data().name),
                             ),
+                            Expanded(
+                              child: Text(taskDocs![index].data().percCompletion.toString()),
+                            ),
+                            Expanded(
+                              child: Text((DateTime.now().difference(taskDocs![index].data().creationDate) * 100).toString()),
+                            ),
+                            Expanded(
+                              child: Text(taskDocs![index].data().endDate.toString()),
+                            ),
                           ],
                         ),
                         onTap: () {

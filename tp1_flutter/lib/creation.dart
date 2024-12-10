@@ -33,17 +33,27 @@ class _CreationState extends State<Creation> {
 
   void addTask() async
   {
-    CollectionReference tasksCollection = FirebaseFirestore.instance
-      .collection('user')
-      .doc(FirebaseAuth.instance.currentUser!.uid)
-      .collection('tasks')
-        .withConverter<Task>(
-        fromFirestore: (doc, _) => Task.fromJson(doc.data()!),
-        toFirestore: (task, _) => task.toJson(),
-      );
+    if (UsernameTextController.text.trim() != "") {
+      var dateDifference = selectedDate.difference(DateTime.now());
+      if (!dateDifference.isNegative) {
+        CollectionReference tasksCollection = FirebaseFirestore.instance
+            .collection('user')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection('tasks')
+            .withConverter<Task>(
+          fromFirestore: (doc, _) => Task.fromJson(doc.data()!),
+          toFirestore: (task, _) => task.toJson(),
+        );
 
-    Task task = Task(name: UsernameTextController.text);
-    tasksCollection.add(task);
+        Task task = Task(name: UsernameTextController.text,
+            creationDate: DateTime.now(),
+            endDate: selectedDate,
+            percCompletion: 0);
+        tasksCollection.add(task);
+        Navigator.pushNamed(context, '/accueil');
+      }
+    }
+    loading = false;
   }
 
   _selectDate(BuildContext context) async {
@@ -104,8 +114,6 @@ class _CreationState extends State<Creation> {
                     req.deadline = selectedDate; //selectedDate;
                     //var reponse = await addTask(req);
                     //print(reponse);
-
-                    Navigator.pushNamed(context, '/accueil');
                   } on DioError catch (e) {
                     print(e);
                     loading = false;
