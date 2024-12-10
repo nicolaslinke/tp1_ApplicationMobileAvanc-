@@ -36,7 +36,7 @@ class _CreationState extends State<Creation> {
     if (UsernameTextController.text.trim() != "") {
       var dateDifference = selectedDate.difference(DateTime.now());
       if (!dateDifference.isNegative) {
-        CollectionReference tasksCollection = FirebaseFirestore.instance
+        CollectionReference<Task> tasksCollection = FirebaseFirestore.instance
             .collection('user')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .collection('tasks')
@@ -44,14 +44,48 @@ class _CreationState extends State<Creation> {
           fromFirestore: (doc, _) => Task.fromJson(doc.data()!),
           toFirestore: (task, _) => task.toJson(),
         );
+        QuerySnapshot<Task> result = await tasksCollection.get();
+        var nameExist = false;
+        for (var task in result.docs)
+        {
+           if (task.data().name == UsernameTextController.text.trim()) nameExist = true;
+        }
+        if (nameExist == false) {
+          CollectionReference tasksCollection = FirebaseFirestore.instance
+              .collection('user')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .collection('tasks')
+              .withConverter<Task>(
+            fromFirestore: (doc, _) => Task.fromJson(doc.data()!),
+            toFirestore: (task, _) => task.toJson(),
+          );
 
-        Task task = Task(name: UsernameTextController.text,
-            creationDate: DateTime.now(),
-            endDate: selectedDate,
-            percCompletion: 0);
-        tasksCollection.add(task);
-        Navigator.pushNamed(context, '/accueil');
+          Task task = Task(name: UsernameTextController.text,
+              creationDate: DateTime.now(),
+              endDate: selectedDate,
+              percCompletion: 0);
+          tasksCollection.add(task);
+          Navigator.pushNamed(context, '/accueil');
+        }
+        else
+        {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Cette tâche existe déjà, veuillez choisir un nom différent")
+          ));
+        }
       }
+      else
+      {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("La date choisi doit être dans le future")
+        ));
+      }
+    }
+    else
+    {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Le nom de la tâche ne peut pas être vide")
+      ));
     }
     loading = false;
   }

@@ -195,6 +195,20 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               onPressed: () async {
                 try {
+                  final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                      email: UsernameTextController.text,
+                      password: PasswordTextController.text
+                  );
+                  Singleton.instance.username = UsernameTextController.text;
+                  Navigator.pushNamed(context, '/accueil');
+                } on FirebaseAuthException catch (e) {
+                  if (e.code == 'user-not-found') {
+                    print('No user found for that email.');
+                  } else if (e.code == 'wrong-password') {
+                    print('Wrong password provided for that user.');
+                  }
+                }
+                try {
                   SigninRequest req = SigninRequest();
                   req.username = UsernameTextController.text;
                   req.password = PasswordTextController.text;

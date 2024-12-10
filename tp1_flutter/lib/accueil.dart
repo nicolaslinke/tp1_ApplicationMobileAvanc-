@@ -150,10 +150,13 @@ class _AccueilState extends State<Accueil> with WidgetsBindingObserver{
                               child: Text(taskDocs![index].data().name),
                             ),
                             Expanded(
-                              child: Text(taskDocs![index].data().percCompletion.toString()),
+                              child: Text(taskDocs![index].data().percCompletion.toString() + "%"),
                             ),
                             Expanded(
-                              child: Text((DateTime.now().difference(taskDocs![index].data().creationDate) * 100).toString()),
+                              child: Text(
+                                  (DateTime.now().difference(taskDocs![index].data().creationDate).inMinutes
+                                  / taskDocs![index].data().endDate.difference(taskDocs![index].data().creationDate).inMinutes * 100)
+                                  .ceil().toString() + "%"),
                             ),
                             Expanded(
                               child: Text(taskDocs![index].data().endDate.toString()),
@@ -164,7 +167,7 @@ class _AccueilState extends State<Accueil> with WidgetsBindingObserver{
                           Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) =>
-                                  Consultation(id: listTask[index].id))
+                                  Consultation(id: taskDocs![index].id))
                           );
                         }
                     );

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tp1_flutter/Singleton.dart';
@@ -48,7 +49,8 @@ class LeTiroirState extends State<LeTiroir> {
           dense: true,
           leading: const Icon(Icons.ac_unit),
           title: const Text("Déconnexion"),
-          onTap: () {
+          onTap: () async {
+            await FirebaseAuth.instance.signOut();
             Singleton.instance.username = "";
             SharedPreferences.getInstance().then((onValue) {
               onValue.remove("username");
